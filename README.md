@@ -16,3 +16,6 @@ For example :
 gotwitch -channel theoldcoder -lang fr
 ```
 
+## Cross compile to Windows
+
+GOOS=windows CGO_ENABLED=1 GOARCH=386 go build
