@@ -7,16 +7,16 @@ import (
 	"github.com/gempir/go-twitch-irc/v3"
 	htgotts "github.com/hegedustibor/htgo-tts"
 	handlers "github.com/hegedustibor/htgo-tts/handlers"
-	voices "github.com/hegedustibor/htgo-tts/voices"
 )
 
 func main() {
 
 	channel := flag.String("channel", "theoldcoder", "the twitch channel to join")
+	lang := flag.String("lang", "fr", "the lang code for the voice (fr, en, ...)")
 
 	flag.Parse()
 
-	speech := htgotts.Speech{Folder: "/tmp/audio", Language: voices.French, Handler: &handlers.Native{}}
+	speech := htgotts.Speech{Folder: "/tmp/audio", Language: *lang, Handler: &handlers.Native{}}
 
 	// for an anonymous user (no write capabilities)
 	client := twitch.NewAnonymousClient()
