@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 
 	"github.com/gempir/go-twitch-irc/v3"
 	htgotts "github.com/hegedustibor/htgo-tts"
@@ -16,7 +17,9 @@ func main() {
 
 	flag.Parse()
 
-	speech := htgotts.Speech{Folder: "/tmp/audio", Language: *lang, Handler: &handlers.Native{}}
+	audioDir := os.TempDir()
+
+	speech := htgotts.Speech{Folder: audioDir, Language: *lang, Handler: &handlers.Native{}}
 
 	// for an anonymous user (no write capabilities)
 	client := twitch.NewAnonymousClient()
@@ -26,7 +29,10 @@ func main() {
 	client.OnPrivateMessage(func(message twitch.PrivateMessage) {
 		sentence = fmt.Sprintf("Message de %s : %s", message.User.DisplayName, message.Message)
 		fmt.Println(sentence)
-		speech.Speak(sentence)
+		err := speech.Speak(sentence)
+		if err != nil {
+			fmt.Printf("error from speech: %s", err)
+		}
 	})
 
 	client.Join(*channel)
