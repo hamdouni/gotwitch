@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 
 	"github.com/gempir/go-twitch-irc/v3"
@@ -10,6 +11,11 @@ import (
 )
 
 func main() {
+
+	channel := flag.String("channel", "theoldcoder", "the twitch channel to join")
+
+	flag.Parse()
+
 	speech := htgotts.Speech{Folder: "/tmp/audio", Language: voices.French, Handler: &handlers.Native{}}
 
 	// for an anonymous user (no write capabilities)
@@ -23,7 +29,7 @@ func main() {
 		speech.Speak(sentence)
 	})
 
-	client.Join("theoldcoder")
+	client.Join(*channel)
 
 	err := client.Connect()
 	if err != nil {
