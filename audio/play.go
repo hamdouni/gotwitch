@@ -1,7 +1,6 @@
-package main
+package audio
 
 import (
-	"bytes"
 	"os"
 	"time"
 
@@ -9,18 +8,17 @@ import (
 	"github.com/hajimehoshi/oto/v2"
 )
 
-func play(filename string) error {
-	// Read the mp3 file into memory
-	fileBytes, err := os.ReadFile(filename)
+func Play(filename string) error {
+
+	// Read the mp3 file as a stream
+	sndFile, err := os.Open(filename)
 	if err != nil {
 		return err
 	}
-
-	// Convert the pure bytes into a reader object that can be used with the mp3 decoder
-	fileBytesReader := bytes.NewReader(fileBytes)
+	defer sndFile.Close()
 
 	// Decode file
-	decodedMp3, err := mp3.NewDecoder(fileBytesReader)
+	decodedMp3, err := mp3.NewDecoder(sndFile)
 	if err != nil {
 		return err
 	}
@@ -29,7 +27,7 @@ func play(filename string) error {
 	// play all our sounds. Its configuration can't be changed later.
 
 	// Usually 44100 or 48000. Other values might cause distortions in Oto
-	samplingRate := 44100
+	samplingRate := 48000
 
 	// Number of channels (aka locations) to play sounds from. Either 1 or 2.
 	// 1 is mono sound, and 2 is stereo (most speakers are stereo).
@@ -54,16 +52,8 @@ func play(filename string) error {
 
 	// We can wait for the sound to finish playing using something like this
 	for player.IsPlaying() {
-		time.Sleep(time.Millisecond)
+		time.Sleep(time.Second)
 	}
-
-	// Now that the sound finished playing, we can restart from the beginning (or go to any location in the sound) using seek
-	// newPos, err := player.(io.Seeker).Seek(0, io.SeekStart)
-	// if err != nil{
-	//     panic("player.Seek failed: " + err.Error())
-	// }
-	// println("Player is now at position:", newPos)
-	// player.Play()
 
 	// If you don't want the player/sound anymore simply close
 	err = player.Close()
