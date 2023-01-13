@@ -12,16 +12,17 @@ import (
 )
 
 var (
-	channel = flag.String("channel", "theoldcoder", "the twitch channel to join")
-	lang    = flag.String("lang", "fr", "the lang code for the voice (fr, en, ...)")
-	media   = flag.String("media", "./media", "folder with mp3 files matching commands")
-	speak   = flag.Bool("speak", false, "speak the messages")
+	channel = flag.String("channel", "theoldcoder", "twitch channel to join")
+	lang    = flag.String("lang", "fr", "lang code for the voice (fr, en, ...)")
+	media   = flag.String("media", "./media", "mp3 folder with files matching commands")
+	speak   = flag.Bool("speak", false, "enable message to speech")
 )
 
 func main() {
 
 	flag.Parse()
 
+	// mediaDir is used by htgotts to store mp3 files produced by text to speech
 	mediaDir := os.TempDir()
 
 	speech := htgotts.Speech{Folder: mediaDir, Language: *lang, Handler: &handlers.Native{}}
