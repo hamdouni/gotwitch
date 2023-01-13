@@ -33,6 +33,14 @@ func main() {
 		if message.Message[0] == '#' {
 			// commands start with a '#' and must match an audio mp3 in the 'audio' folder
 			cmd := message.Message[1:]
+			switch cmd {
+			case "clap":
+				audio.PlayClap()
+				return
+			case "bell":
+				audio.PlayBell()
+				return
+			}
 			snd := *media + "/" + cmd + ".mp3"
 			if _, err := os.Stat(snd); err != nil {
 				fmt.Printf("command not found: %s\n", err)
@@ -58,7 +66,7 @@ func main() {
 			return
 		}
 		// default is to ring the bell
-		audio.Play(*media + "/bell.mp3")
+		audio.PlayBell()
 	})
 
 	client.Join(*channel)

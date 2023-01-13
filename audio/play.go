@@ -1,6 +1,8 @@
 package audio
 
 import (
+	"embed"
+	"io"
 	"os"
 	"time"
 
@@ -9,14 +11,32 @@ import (
 )
 
 func Play(filename string) error {
-
 	// Read the mp3 file as a stream
 	sndFile, err := os.Open(filename)
 	if err != nil {
 		return err
 	}
 	defer sndFile.Close()
+	return p(sndFile)
+}
 
+//go:embed assets/bell.mp3
+var bellFile embed.FS
+
+//go:embed assets/clap.mp3
+var clapFile embed.FS
+
+func PlayBell() error {
+	bellReader, _ := bellFile.Open("assets/bell.mp3")
+	return p(bellReader)
+}
+
+func PlayClap() error {
+	clapReader, _ := clapFile.Open("assets/clap.mp3")
+	return p(clapReader)
+}
+
+func p(sndFile io.Reader) error {
 	// Decode file
 	decodedMp3, err := mp3.NewDecoder(sndFile)
 	if err != nil {
