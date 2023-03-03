@@ -10,6 +10,8 @@ import (
 	"github.com/hajimehoshi/oto/v2"
 )
 
+var otoCtx *oto.Context
+
 func Play(filename string) error {
 	// Read the mp3 file as a stream
 	sndFile, err := os.Open(filename)
@@ -57,12 +59,15 @@ func p(sndFile io.Reader) error {
 	audioBitDepth := 2
 
 	// Remember that you should **not** create more than one context
-	otoCtx, readyChan, err := oto.NewContext(samplingRate, numOfChannels, audioBitDepth)
-	if err != nil {
-		return err
+	var readyChan chan struct{}
+	if otoCtx == nil {
+		otoCtx, readyChan, err = oto.NewContext(samplingRate, numOfChannels, audioBitDepth)
+		if err != nil {
+			return err
+		}
+		// It might take a bit for the hardware audio devices to be ready, so we wait on the channel.
+		<-readyChan
 	}
-	// It might take a bit for the hardware audio devices to be ready, so we wait on the channel.
-	<-readyChan
 
 	// Create a new 'player' that will handle our sound. Paused by default.
 	player := otoCtx.NewPlayer(decodedMp3)
