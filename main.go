@@ -5,21 +5,21 @@ import (
 	"fmt"
 	"os"
 
+	"gotwitch/audio"
+
 	"github.com/gempir/go-twitch-irc/v3"
 	htgotts "github.com/hegedustibor/htgo-tts"
 	handlers "github.com/hegedustibor/htgo-tts/handlers"
-	"gotwitch/audio"
 )
 
 var (
-	channel = flag.String("channel", "theoldcoder", "twitch channel to join")
+	channel = flag.String("channel", "codecadim", "twitch channel to join")
 	lang    = flag.String("lang", "fr", "lang code for the voice (fr, en, ...)")
 	media   = flag.String("media", "./media", "mp3 folder with files matching commands")
 	speak   = flag.Bool("speak", false, "enable message to speech")
 )
 
 func main() {
-
 	flag.Parse()
 
 	// mediaDir is used by htgotts to store mp3 files produced by text to speech
