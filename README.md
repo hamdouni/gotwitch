@@ -31,6 +31,7 @@ For example :
 
 The available commands are :
 
+- #speak to turn on/off text to speech
 - #clap to play the sound of a clapping crowd (embeded sound)
 - #bell to ring a bell (embeded sound)
 

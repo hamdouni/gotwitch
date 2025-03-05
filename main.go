@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 
 	"gotwitch/audio"
@@ -19,9 +20,11 @@ var (
 	speak   = flag.Bool("speak", false, "enable message to speech")
 )
 
-func main() {
+func init() {
 	flag.Parse()
+}
 
+func main() {
 	// mediaDir is used by htgotts to store mp3 files produced by text to speech
 	mediaDir := os.TempDir()
 
@@ -31,8 +34,10 @@ func main() {
 
 	var sentence string
 	client.OnPrivateMessage(func(message twitch.PrivateMessage) {
+		sentence = fmt.Sprintf("%s: %s", message.User.DisplayName, message.Message)
+		log.Println(sentence)
 		if message.Message[0] == '#' {
-			// commands start with a '#' and must match an audio mp3 in the 'audio' folder
+			// commands start with a '#'
 			cmd := message.Message[1:]
 			switch cmd {
 			case "clap":
@@ -41,28 +46,30 @@ func main() {
 			case "bell":
 				audio.PlayBell()
 				return
+			case "speak":
+				*speak = !*speak // turn on/off text to speech
+				return
 			}
+			// must match an audio mp3 in 'audio' folder
 			snd := *media + "/" + cmd + ".mp3"
 			if _, err := os.Stat(snd); err != nil {
-				fmt.Printf("command not found: %s\n", err)
+				log.Printf("command not found: %s\n", err)
 				return
 			}
 			// play the audio files in go routines so we do not block the bot
 			go func() {
 				err := audio.Play(snd)
 				if err != nil {
-					fmt.Printf("error from play: %s\n", err)
+					log.Printf("error from play: %s\n", err)
 				}
 			}()
 			return // so we do nothing more
 		}
 		// if not a command and speak enabled then say the message
 		if *speak {
-			sentence = fmt.Sprintf("%s %s", message.User.DisplayName, message.Message)
-			fmt.Println(sentence)
 			err := speech.Speak(sentence)
 			if err != nil {
-				fmt.Printf("error from speech: %s", err)
+				log.Printf("error from speech: %s", err)
 			}
 			return
 		}
